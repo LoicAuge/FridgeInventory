@@ -2,9 +2,12 @@ package com.sunity.fridgeinventory;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -33,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding binding;
     private AppDatabase db;
-    private ListView listView;
+    private ListView alimentView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,14 +47,9 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        listView = binding.alimentList;
+        this.setAlimentView();
 
         setSupportActionBar(binding.toolbar);
-
-        List<String> aliments = db.alimentDao().getAll().stream()
-                .map(aliment -> aliment.getBrand() + System.lineSeparator() + aliment.getName())
-                .collect(Collectors.toList());
-        listView.setAdapter(new ArrayAdapter(this, android.R.layout.simple_list_item_1, aliments));
 
         binding.fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -71,8 +69,27 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onPointerCaptureChanged(boolean hasCapture) {
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_dropDB) {
+            db.alimentDao().nukeTable();
+            this.setAlimentView();
+        } else if (id == R.id.action_settings) {
+            Toast.makeText(getApplicationContext(), "Settings", Toast.LENGTH_SHORT);
+        }
+        return true;
     }
 
     @Override
@@ -83,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
                 requestCode, resultCode, data
         );
 
-        if (intentResult.getContents() != null) {
+        if (intentResult.getContents() != null && db.alimentDao().findByBarCode(Double.parseDouble(intentResult.getContents())) == null) {
 
             RequestQueue queue = Volley.newRequestQueue(this);
             String url = "https://world.openfoodfacts.org/api/v0/product/%.json";
@@ -93,9 +110,6 @@ public class MainActivity extends AppCompatActivity {
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
-                            /*// Display the first 500 characters of the response string.
-                            textView.setText("Response is: " + response.substring(0, 500));*/
-
                             String jsonString = response;
                             JSONObject obj = null;
                             Aliment temp = new Aliment();
@@ -104,11 +118,14 @@ public class MainActivity extends AppCompatActivity {
                                 obj = new JSONObject(jsonString);
                                 temp.setBarCode(Double.parseDouble(obj.getJSONObject("product").getString("code")));
                                 temp.setBrand(obj.getJSONObject("product").getString("brands").split(",")[0]);
-                                temp.setName(obj.getJSONObject("product").getString("generic_name_fr") != "" ? obj.getJSONObject("product").getString("generic_name_fr") : obj.getJSONObject("product").getString("generic_name"));
+                                temp.setName(obj.getJSONObject("product").getString("product_name_fr") != ""
+                                        ? obj.getJSONObject("product").getString("product_name_fr")
+                                        : obj.getJSONObject("product").getString("product_name"));
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
                             alimentDao.insertAll(temp);
+                            setAlimentView();
                         }
                     }, new Response.ErrorListener() {
                 @Override
@@ -116,12 +133,21 @@ public class MainActivity extends AppCompatActivity {
                     //binding.textView.setText("That didn't work!");
                 }
             });
-
-// Add the request to the RequestQueue.
             queue.add(stringRequest);
-
         } else {
-            //binding.textView.setText("Vide");
+            Toast.makeText(getApplicationContext(), "Valeur vide", Toast.LENGTH_SHORT);
         }
     }
+
+    private void setAlimentView(){
+
+        alimentView = binding.alimentList;
+        alimentView.setAdapter(null);
+
+        List<String> aliments = db.alimentDao().getAll().stream()
+                .map(aliment -> aliment.getBrand() + System.lineSeparator() + aliment.getName())
+                .collect(Collectors.toList());
+        alimentView.setAdapter(new ArrayAdapter(this, android.R.layout.simple_list_item_1, aliments));
+    }
+
 }

@@ -2,6 +2,7 @@
     <string name="app_name">FridgeInventory</string>
     <string name="app_title">Fridge Inventory</string>
     <string name="action_settings">Settings</string>
+    <string name="action_dropDB">Drop database</string>
 
     <string name="default_text">Welcome in the application</string>
 

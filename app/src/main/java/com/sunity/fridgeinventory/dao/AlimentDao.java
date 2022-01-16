@@ -23,4 +23,7 @@ public interface AlimentDao {
 
     @Delete
     void delete(Aliment user);
+
+    @Query("DELETE FROM aliment")
+    void nukeTable();
 }
