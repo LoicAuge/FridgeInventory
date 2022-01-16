@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">FridgeInventory</string>
+    <string name="app_title">Inventaire Frigorifique</string>
+    <string name="action_settings">Réglages</string>
+    <string name="default_text">Bienvenue dans l\'application</string>
+</resources>
