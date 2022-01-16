@@ -45,4 +45,5 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
     implementation 'com.journeyapps:zxing-android-embedded:3.4.0'
     annotationProcessor 'androidx.room:room-compiler:2.2.6'
+    implementation 'com.squareup.picasso:picasso:2.71828'
 }

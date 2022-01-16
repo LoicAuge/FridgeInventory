@@ -17,6 +17,12 @@ public class Aliment {
     @ColumnInfo(name = "name")
     private String name;
 
+    @ColumnInfo(name = "quantity")
+    private int quantity;
+
+    @ColumnInfo(name = "imgURL")
+    private String imgURL;
+
     public String getBrand() {
         return brand;
     }
@@ -41,4 +47,19 @@ public class Aliment {
         this.barCode = barCode;
     }
 
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
+    public String getImgURL() {
+        return imgURL;
+    }
+
+    public void setImgURL(String imgURL) {
+        this.imgURL = imgURL;
+    }
 }

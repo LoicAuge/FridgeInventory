@@ -6,7 +6,7 @@ import androidx.room.RoomDatabase;
 import com.sunity.fridgeinventory.dao.AlimentDao;
 import com.sunity.fridgeinventory.entity.Aliment;
 
-@Database(entities = {Aliment.class}, version=1)
+@Database(entities = {Aliment.class}, version=2)
 public abstract class AppDatabase extends RoomDatabase{
     public abstract AlimentDao alimentDao();
 }

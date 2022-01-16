@@ -121,6 +121,7 @@ public class MainActivity extends AppCompatActivity {
                                 temp.setName(obj.getJSONObject("product").getString("product_name_fr") != ""
                                         ? obj.getJSONObject("product").getString("product_name_fr")
                                         : obj.getJSONObject("product").getString("product_name"));
+                                temp.setImgURL(obj.getJSONObject("product").getString("image_front_small_url"));
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
@@ -144,10 +145,8 @@ public class MainActivity extends AppCompatActivity {
         alimentView = binding.alimentList;
         alimentView.setAdapter(null);
 
-        List<String> aliments = db.alimentDao().getAll().stream()
-                .map(aliment -> aliment.getBrand() + System.lineSeparator() + aliment.getName())
-                .collect(Collectors.toList());
-        alimentView.setAdapter(new ArrayAdapter(this, android.R.layout.simple_list_item_1, aliments));
+        List<Aliment> aliments = db.alimentDao().getAll();
+        alimentView.setAdapter(new CustomListAdapter(this, aliments));
     }
 
 }
